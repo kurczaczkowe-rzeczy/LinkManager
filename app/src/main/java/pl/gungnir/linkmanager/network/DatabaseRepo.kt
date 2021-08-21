@@ -1,3 +1,6 @@
 package pl.gungnir.linkmanager.network
 
-interface DatabaseRepo
+interface DatabaseRepo {
+
+    fun dump(): String
+}
