@@ -1,7 +1,8 @@
-package pl.gungnir.linkmanager
+package pl.gungnir.linkmanager.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import pl.gungnir.linkmanager.R
 
 class MainActivity : AppCompatActivity() {
 
