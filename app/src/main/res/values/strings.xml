@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Link Manager</string>
+    <string name="previous_links">Poprzednie linki:</string>
 </resources>

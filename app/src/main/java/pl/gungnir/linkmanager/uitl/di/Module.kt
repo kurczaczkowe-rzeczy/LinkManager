@@ -11,6 +11,7 @@ import pl.gungnir.linkmanager.network.DatabaseRepo
 import pl.gungnir.linkmanager.network.DatabaseRepoImpl
 import pl.gungnir.linkmanager.network.FirebaseDatabaseRepo
 import pl.gungnir.linkmanager.network.FirebaseDatabaseRepoImpl
+import pl.gungnir.linkmanager.ui.history.adapter.LinkAdapter
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -28,6 +29,11 @@ class DatabasesRepoModule {
         return DatabaseRepoImpl(
             firebaseDatabaseRepo
         )
+    }
+
+    @Provides
+    fun provideLinkAdapter(): LinkAdapter {
+        return LinkAdapter()
     }
 }
 

@@ -1,28 +1,38 @@
 package pl.gungnir.linkmanager.ui.history
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import pl.gungnir.linkmanager.R
 import pl.gungnir.linkmanager.ui.MainViewModel
+import pl.gungnir.linkmanager.ui.history.adapter.LinkAdapter
 import pl.gungnir.linkmanager.ui.history.state.MainStateEvent
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HistoryFragment : Fragment() {
 
     lateinit var mViewModel: MainViewModel
 
+    @Inject
+    lateinit var mAdapter: LinkAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_history_links, container, false)
+        val view = inflater.inflate(R.layout.fragment_history_links, container, false)
+
+        mAdapter.setOnClickItem { triggerOpenLinkEvent(it) }
+        view.findViewById<RecyclerView>(R.id.list).adapter = mAdapter
+
+        return view
     }
 
     override fun onResume() {
@@ -49,12 +59,16 @@ class HistoryFragment : Fragment() {
         }
         mViewModel.viewState.observe(viewLifecycleOwner) { viewState ->
             viewState.listLinks?.let {
-                Log.d("MRMRMR", "HistoryFragment.kt subscribeObservers: $it")
+                mAdapter.updateList(it)
             }
         }
     }
 
-    fun triggerGetLinksEvent() {
+    private fun triggerGetLinksEvent() {
         mViewModel.setStateEvent(MainStateEvent.GetLinks)
+    }
+
+    private fun triggerOpenLinkEvent(position: Int) {
+
     }
 }
