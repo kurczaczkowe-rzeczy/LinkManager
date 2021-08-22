@@ -1,9 +1,12 @@
 package pl.gungnir.linkmanager.uitl.di
 
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.scopes.ViewModelScoped
+import pl.gungnir.linkmanager.domain.useCase.GetLinkUseCase
 import pl.gungnir.linkmanager.network.DatabaseRepo
 import pl.gungnir.linkmanager.network.DatabaseRepoImpl
 import pl.gungnir.linkmanager.network.FirebaseDatabaseRepo
@@ -11,15 +14,30 @@ import pl.gungnir.linkmanager.network.FirebaseDatabaseRepoImpl
 
 @Module
 @InstallIn(ActivityComponent::class)
-abstract class DatabasesRepoModule {
+class DatabasesRepoModule {
 
-    @Binds
-    abstract fun bindDatabaseRepo(
-        databaseRepoImpl: DatabaseRepoImpl
-    ): DatabaseRepo
+    @Provides
+    fun provideFirebaseDatabaseRepo(): FirebaseDatabaseRepo {
+        return FirebaseDatabaseRepoImpl()
+    }
 
-    @Binds
-    abstract fun bindFirebaseDatabaseRepo(
-        firebaseDatabaseRepo: FirebaseDatabaseRepoImpl
-    ): FirebaseDatabaseRepo
+    @Provides
+    fun provideDatabaseRepo(
+        firebaseDatabaseRepo: FirebaseDatabaseRepo
+    ): DatabaseRepo {
+        return DatabaseRepoImpl(
+            firebaseDatabaseRepo
+        )
+    }
+}
+
+@Module
+@InstallIn(ViewModelComponent::class)
+class UseCaseModule {
+
+    @Provides
+    @ViewModelScoped
+    fun provideGetLinkUseCase(): GetLinkUseCase {
+        return GetLinkUseCase(DatabaseRepoImpl(FirebaseDatabaseRepoImpl()))
+    }
 }
