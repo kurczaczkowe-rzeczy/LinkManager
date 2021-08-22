@@ -5,14 +5,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-abstract class BaseFlowUseCase<out Type, in Params> where Type : Any {
+abstract class BaseUseCase<out Type, in Params> where Type : Any {
 
-    abstract suspend fun run(params: Params): Flow<Type>
+    abstract suspend fun run(params: Params): Type
 
     suspend operator fun invoke(
         params: Params,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ): Flow<Type> {
+    ): Type {
         return withContext(dispatcher) {
             run(params)
         }
