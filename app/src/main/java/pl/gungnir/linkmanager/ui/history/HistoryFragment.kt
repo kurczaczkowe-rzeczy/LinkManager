@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import pl.gungnir.linkmanager.R
+import pl.gungnir.linkmanager.ui.MainActivity
 import pl.gungnir.linkmanager.ui.MainViewModel
 import pl.gungnir.linkmanager.ui.history.adapter.LinkAdapter
 import pl.gungnir.linkmanager.ui.history.state.MainStateEvent
@@ -35,12 +36,6 @@ class HistoryFragment : Fragment() {
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        triggerGetLinksEvent()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -49,6 +44,7 @@ class HistoryFragment : Fragment() {
         } ?: throw Exception("Invalid Activity")
 
         subscribeObservers()
+        triggerGetLinksEvent()
     }
 
     private fun subscribeObservers() {
@@ -56,10 +52,18 @@ class HistoryFragment : Fragment() {
             dataState.listLinks?.let {
                 mViewModel.setLinks(it)
             }
+
+            dataState.selectedLink?.let {
+                mViewModel.setSelectedLink(it)
+            }
         }
         mViewModel.viewState.observe(viewLifecycleOwner) { viewState ->
             viewState.listLinks?.let {
                 mAdapter.updateList(it)
+            }
+
+            viewState.selectedLink?.let {
+                (activity as? MainActivity)?.showBrowserFragment()
             }
         }
     }
@@ -69,6 +73,6 @@ class HistoryFragment : Fragment() {
     }
 
     private fun triggerOpenLinkEvent(position: Int) {
-
+        mViewModel.setStateEvent(MainStateEvent.SelectLink(position))
     }
 }

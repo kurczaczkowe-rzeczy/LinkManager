@@ -30,7 +30,7 @@ class MainViewModel @Inject constructor(
             }
         }
 
-    fun handleStateEvent(stateEvent: MainStateEvent): LiveData<MainViewState> {
+    private fun handleStateEvent(stateEvent: MainStateEvent): LiveData<MainViewState> {
         return when (stateEvent) {
             is MainStateEvent.GetLinks -> {
                 object : LiveData<MainViewState>() {
@@ -40,10 +40,25 @@ class MainViewModel @Inject constructor(
                             val result = getLinkUseCase.invoke(None)
                             if (result is Result.Success) {
                                 value = MainViewState(
-                                    listLinks = result.data
+                                    listLinks = result.data,
+                                    selectedLink = null
                                 )
                             }
                         }
+                    }
+                }
+            }
+
+            is MainStateEvent.SelectLink -> {
+                object : LiveData<MainViewState>() {
+                    override fun onActive() {
+                        super.onActive()
+
+                        val link = dataState.value?.listLinks?.get(stateEvent.position)
+
+                        value = MainViewState(
+                            selectedLink = link,
+                        )
                     }
                 }
             }
@@ -54,13 +69,19 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun setSelectedLink(link: Link) {
+        val update = getCurrentViewStateOrNew()
+        update.selectedLink = link
+        _viewState.value = update
+    }
+
     fun setLinks(list: List<Link>) {
         val update = getCurrentViewStateOrNew()
         update.listLinks = list
         _viewState.value = update
     }
 
-    fun getCurrentViewStateOrNew(): MainViewState {
+    private fun getCurrentViewStateOrNew(): MainViewState {
         return viewState.value?.let {
             it
         } ?: MainViewState()
@@ -70,20 +91,4 @@ class MainViewModel @Inject constructor(
         val state: MainStateEvent = event
         _stateEvent.value = state
     }
-
-//    private var links: Result = Result.Empty
-
-//    init {
-//        if (links is Result.Empty) {
-//            links = Result.Loading
-//            viewModelScope.launch {
-//                getLinkUseCase.invoke(None)
-//                    .onEach {
-//                        links = it
-//                    }
-//                    .launchIn(this)
-//            }
-//        }
-//    }
-
 }
