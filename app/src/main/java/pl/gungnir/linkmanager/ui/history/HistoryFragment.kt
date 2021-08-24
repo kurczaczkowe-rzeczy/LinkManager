@@ -48,22 +48,27 @@ class HistoryFragment : Fragment() {
     }
 
     private fun subscribeObservers() {
-        mViewModel.dataState.observe(viewLifecycleOwner) { dataState ->
-            dataState.listLinks?.let {
-                mViewModel.setLinks(it)
-            }
+        mViewModel.dataState.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { dataState ->
+                dataState.listLinks?.let {
+                    mViewModel.setLinks(it)
+                }
 
-            dataState.selectedLink?.let {
-                mViewModel.setSelectedLink(it)
+                dataState.selectedLink?.let {
+                    mViewModel.setSelectedLink(it)
+                }
             }
         }
-        mViewModel.viewState.observe(viewLifecycleOwner) { viewState ->
-            viewState.listLinks?.let {
-                mAdapter.updateList(it)
-            }
 
-            viewState.selectedLink?.let {
-                (activity as? MainActivity)?.showBrowserFragment()
+        mViewModel.viewState.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { viewState ->
+                viewState.listLinks?.let {
+                    mAdapter.updateList(it)
+                }
+
+                viewState.selectedLink?.let {
+                    (activity as? MainActivity)?.showBrowserFragment()
+                }
             }
         }
     }

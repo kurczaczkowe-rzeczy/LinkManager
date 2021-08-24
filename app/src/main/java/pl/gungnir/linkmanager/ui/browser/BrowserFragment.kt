@@ -42,7 +42,7 @@ class BrowserFragment : Fragment() {
 
     private fun subscribeObservers() {
         mViewModel.viewState.observe(viewLifecycleOwner) { viewState ->
-            viewState.selectedLink?.let {
+            viewState.peekContent().selectedLink?.let {
                 label.text = it.label
                 webView.loadUrl(it.url)
             }
